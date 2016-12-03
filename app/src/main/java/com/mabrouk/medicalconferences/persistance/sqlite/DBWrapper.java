@@ -77,13 +77,9 @@ public class DBWrapper {
 
     public void updateLoggedInUser(User user) {
         ContentValues values = UserMapper.getUpdateLastLoginContentValues();
-        try {
-            dbHelper.getWritableDatabase()
-                    .update(UserTable.TABLE_NAME, values, UserTable.COLUMN_ID + " = ?",
-                            new String[]{String.valueOf(user.getId())});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        dbHelper.getWritableDatabase()
+                .update(UserTable.TABLE_NAME, values, UserTable.COLUMN_ID + " = ?",
+                        new String[]{String.valueOf(user.getId())});
     }
 
     public List<Conference> getUpcomingConferencesForAdmin(int adminId) {
@@ -138,50 +134,40 @@ public class DBWrapper {
     }
 
     public List<Invitation> getInvitationsForConference(int conferenceId) {
-        try {
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            final String invTable = InvitationTable.TABLE_NAME;
-            final String userTable = UserTable.TABLE_NAME;
-            Cursor cursor = db.rawQuery(String.format("SELECT I.%s, %s, %s, %s, %s, D.%s, D.%s FROM %s AS I JOIN %s AS D" +
-                            " ON I.%s = D.%s WHERE %s = ? ORDER BY I.%s DESC", InvitationTable.COLUMN_ID,
-                    InvitationTable.COLUMN_ADMIN_ID, InvitationTable.COLUMN_CONFERENCE_ID, InvitationTable.COLUMN_STATE,
-                    InvitationTable.COLUMN_DOCTOR_ID, UserTable.COLUMN_FIRST_NAME, UserTable.COLUMN_LAST_NAME,
-                    invTable, userTable, InvitationTable.COLUMN_DOCTOR_ID, UserTable.COLUMN_ID,
-                    InvitationTable.COLUMN_CONFERENCE_ID, InvitationTable.COLUMN_UPDATED_AT),
-                    new String[]{String.valueOf(conferenceId)});
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        final String invTable = InvitationTable.TABLE_NAME;
+        final String userTable = UserTable.TABLE_NAME;
+        Cursor cursor = db.rawQuery(String.format("SELECT I.%s, %s, %s, %s, %s, D.%s, D.%s FROM %s AS I JOIN %s AS D" +
+                        " ON I.%s = D.%s WHERE %s = ? ORDER BY I.%s DESC", InvitationTable.COLUMN_ID,
+                InvitationTable.COLUMN_ADMIN_ID, InvitationTable.COLUMN_CONFERENCE_ID, InvitationTable.COLUMN_STATE,
+                InvitationTable.COLUMN_DOCTOR_ID, UserTable.COLUMN_FIRST_NAME, UserTable.COLUMN_LAST_NAME,
+                invTable, userTable, InvitationTable.COLUMN_DOCTOR_ID, UserTable.COLUMN_ID,
+                InvitationTable.COLUMN_CONFERENCE_ID, InvitationTable.COLUMN_UPDATED_AT),
+                new String[]{String.valueOf(conferenceId)});
 
-            List<Invitation> invitations = new ArrayList<>(cursor.getCount());
-            while (cursor.moveToNext()) {
-                invitations.add(InvitationMapper.getInvitationWithDoctorFromCursor(cursor));
-            }
-            return invitations;
-        } catch (Exception e) {
-            e.printStackTrace();
+        List<Invitation> invitations = new ArrayList<>(cursor.getCount());
+        while (cursor.moveToNext()) {
+            invitations.add(InvitationMapper.getInvitationWithDoctorFromCursor(cursor));
         }
-        return null;
+        return invitations;
     }
 
     public List<Topic> getConferenceTopics(int conferenceId) {
-        try {
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            String query = String.format("SELECT T.%s, %s, %s, %s, %s, %s, %s FROM %s AS T JOIN %s AS D ON T.%s = D.%s" +
-                            " WHERE %s = ? ORDER BY %s DESC", TopicTable.COLUMN_ID, TopicTable.COLUMN_DESCRIPTION,
-                    TopicTable.COLUMN_CREATED_AT, TopicTable.COLUMN_CREATOR_ID, TopicTable.COLUMN_CONFERENCE_ID,
-                    UserTable.COLUMN_FIRST_NAME, UserTable.COLUMN_LAST_NAME, TopicTable.TABLE_NAME, UserTable.TABLE_NAME,
-                    TopicTable.COLUMN_CREATOR_ID, UserTable.COLUMN_ID, TopicTable.COLUMN_CONFERENCE_ID,
-                    TopicTable.COLUMN_CREATED_AT);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = String.format("SELECT T.%s, %s, %s, %s, %s, %s, %s FROM %s AS T JOIN %s AS D ON T.%s = D.%s" +
+                        " WHERE %s = ? ORDER BY %s DESC", TopicTable.COLUMN_ID, TopicTable.COLUMN_DESCRIPTION,
+                TopicTable.COLUMN_CREATED_AT, TopicTable.COLUMN_CREATOR_ID, TopicTable.COLUMN_CONFERENCE_ID,
+                UserTable.COLUMN_FIRST_NAME, UserTable.COLUMN_LAST_NAME, TopicTable.TABLE_NAME, UserTable.TABLE_NAME,
+                TopicTable.COLUMN_CREATOR_ID, UserTable.COLUMN_ID, TopicTable.COLUMN_CONFERENCE_ID,
+                TopicTable.COLUMN_CREATED_AT);
 
-            Cursor cursor = db.rawQuery(query,
-                    new String[]{String.valueOf(conferenceId)});
+        Cursor cursor = db.rawQuery(query,
+                new String[]{String.valueOf(conferenceId)});
 
-            List<Topic> topics = new ArrayList<>(cursor.getCount());
-            while (cursor.moveToNext())
-                topics.add(TopicMapper.topicFromCursor(cursor));
-            return topics;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        List<Topic> topics = new ArrayList<>(cursor.getCount());
+        while (cursor.moveToNext())
+            topics.add(TopicMapper.topicFromCursor(cursor));
+        return topics;
     }
 
     public int insertTopic(Topic topic) {

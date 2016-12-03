@@ -30,7 +30,7 @@ public class InvitationDoctorAdapter extends RecyclerView.Adapter<InvitationDoct
     @Override
     public void onBindViewHolder(InvitationDoctorViewHolder holder, int position) {
         Invitation invitation = invitations.get(position);
-        holder.doctorName.setText(String.format("To: %s %s", invitation.getDoctor().getFirstName(),
+        holder.doctorName.setText(String.format("%s %s", invitation.getDoctor().getFirstName(),
                 invitation.getDoctor().getLastName()));
         holder.state.setText(Invitation.getStateText(invitation));
     }

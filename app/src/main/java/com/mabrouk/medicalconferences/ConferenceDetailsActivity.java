@@ -1,6 +1,5 @@
 package com.mabrouk.medicalconferences;
 
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
@@ -11,20 +10,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
 import com.mabrouk.medicalconferences.Util.DateUtils;
 import com.mabrouk.medicalconferences.fragments.InvitedDoctorsFragment;
 import com.mabrouk.medicalconferences.fragments.TopicsFragment;
 import com.mabrouk.medicalconferences.model.Conference;
+import com.mabrouk.medicalconferences.model.Invitation;
 import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import rx.Observable;
@@ -33,35 +27,57 @@ import rx.schedulers.Schedulers;
 
 public class ConferenceDetailsActivity extends AppCompatActivity {
     private static final String EXTRA_CONFERENCE = "conference";
+    private static final String EXTRA_MODE = "mode";
+    private static final String EXTRA_STATE = "state";
+
     private static final int REQUEST_INVITE = 1;
+    private static final int REQUEST_TOPIC= 2;
+    private static final int MODE_ADMIN = 0;
+    private static final int MODE_DOCTOR = 1;
+
+
 
     public static void startInstance(Activity activity, Conference conference) {
         Intent intent = new Intent(activity, ConferenceDetailsActivity.class);
         intent.putExtra(EXTRA_CONFERENCE, conference);
+        int mode = activity instanceof AdminHomeActivity ? MODE_ADMIN : MODE_DOCTOR;
+        intent.putExtra(EXTRA_MODE, mode);
+        if(mode == MODE_DOCTOR)
+            intent.putExtra(EXTRA_STATE, conference.getInvitation().getState());
         activity.startActivity(intent);
     }
 
     TextView date;
     TextView time;
-    TextView admin;
+    TextView extraInfo;
     ViewPager viewPager;
     FloatingActionButton addFab;
     PagerAdapter adapter;
 
+    int mode;
     Conference conference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conference_details);
         conference = getIntent().getParcelableExtra(EXTRA_CONFERENCE);
+        mode = getIntent().getIntExtra(EXTRA_MODE, 0);
+
         setTitle(conference.getName());
         date = (TextView) findViewById(R.id.date);
         time = (TextView) findViewById(R.id.time);
-        admin = (TextView) findViewById(R.id.admin);
+        extraInfo = (TextView) findViewById(R.id.extra_info);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         addFab = (FloatingActionButton) findViewById(R.id.add_button);
-        addFab.setOnClickListener(v ->
-                InviteDoctorsActivity.startInstance(this, conference.getId(), REQUEST_INVITE));
+
+        addFab.setVisibility(mode == MODE_DOCTOR ? View.INVISIBLE : View.GONE);
+        addFab.setOnClickListener(v -> {
+            if (mode == MODE_ADMIN) {
+                InviteDoctorsActivity.startInstance(this, conference.getId(), REQUEST_INVITE);
+            }else {
+
+            }
+        });
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -69,7 +85,7 @@ public class ConferenceDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                addFab.setVisibility(position == 0 ? View.VISIBLE : View.GONE);
+                addFab.setVisibility(position == mode ? View.VISIBLE : View.GONE);
             }
 
             @Override
@@ -81,11 +97,20 @@ public class ConferenceDetailsActivity extends AppCompatActivity {
         adapter = new PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
+        if(mode == MODE_ADMIN) {
+            getAdmin();
+        }else{
+            int state = getIntent().getIntExtra(EXTRA_STATE, 0);
+            extraInfo.setText("State: " + Invitation.getStateText(state));
+        }
+    }
+
+    void getAdmin() {
         Observable.just(conference.getAdminId())
                 .map(DBWrapper.getInstance()::getUserById)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(user -> admin.setText("Admin: " + user.getFirstName() + " " + user.getLastName()),
+                .subscribe(user -> extraInfo.setText("Admin: " + user.getFirstName() + " " + user.getLastName()),
                         e -> e.printStackTrace());
     }
 
@@ -125,7 +150,7 @@ public class ConferenceDetailsActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return position == 0 ? "Invitations" : "Topics";
+            return position == 0 ? "Invited" : "Topics";
         }
     }
 }

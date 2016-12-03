@@ -10,7 +10,11 @@ public class Invitation {
     public static final int STATE_REJECTED = 4;
 
     public static String getStateText(Invitation invitation) {
-        switch (invitation.state) {
+        return getStateText(invitation.getState());
+    }
+
+    public static String getStateText(int state) {
+        switch (state) {
             case STATE_PENDING:
                 return "Pending";
             case STATE_ACCEPTED:
@@ -18,8 +22,7 @@ public class Invitation {
             case STATE_REJECTED:
                 return "Rejected";
             default:
-//                throw new IllegalStateException("Invitation state is undefined");
-                return "Pending";
+                throw new IllegalStateException("Invitation state is undefined");
         }
     }
 
