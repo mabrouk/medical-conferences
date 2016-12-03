@@ -2,6 +2,7 @@ package com.mabrouk.medicalconferences;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -23,6 +24,10 @@ import com.mabrouk.medicalconferences.model.User;
 import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
 import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
 
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class LoginActivity extends AppCompatActivity {
 
     private UserLoginTask authTask = null;
@@ -36,15 +41,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userPreferences = new UserPreferences(this);
-        int userId = userPreferences.getUserId();
-        if(userId != 0) {
-            int userRole = userPreferences.getUserRole();
-            gotoUserHome(userId, userRole);
-            overridePendingTransition(0, 0);
-            return;
-        }
-
         setContentView(R.layout.activity_login);
 
         emailView = (EditText) findViewById(R.id.email);
@@ -62,20 +58,35 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+        mEmailSignInButton.setOnClickListener(view -> attemptLogin());
 
         loginFormView = findViewById(R.id.login_form);
         progressView = findViewById(R.id.login_progress);
+        userPreferences = new UserPreferences(this);
+        int userId = userPreferences.getUserId();
+        if(userId != 0) {
+            getLoggedInUserFromDB(userId);
+            showProgress(true);
+        }
     }
 
-    private void gotoUserHome(int userId, int userRole) {
-        if(userRole == User.ROLE_ADMIN) {
-            AdminHomeActivity.startInstance(this, userId);
+    void getLoggedInUserFromDB(int userId) {
+        Observable.just(userId)
+                .map(DBWrapper.getInstance()::getUserById)
+                .doOnNext(DBWrapper.getInstance()::updateLoggedInUser)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(user -> {
+                    overridePendingTransition(0, 0);
+                    gotoUserHome(user);
+                });
+    }
+
+    private void gotoUserHome(User user) {
+        if(user.getRole() == User.ROLE_ADMIN) {
+            startActivity(new Intent(this, AdminHomeActivity.class));
+        }else{
+            DoctorHomeActivity.startInstance(this, user);
         }
         finish();
     }
@@ -168,7 +179,7 @@ public class LoginActivity extends AppCompatActivity {
         protected User doInBackground(Void... params) {
             User user = null;
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
                 user = DBWrapper.getInstance().getUser(email, password);
                 userPreferences.login(user.getId(), user.getRole());
                 DBWrapper.getInstance().updateLoggedInUser(user);
@@ -184,7 +195,7 @@ public class LoginActivity extends AppCompatActivity {
             authTask = null;
 
             if (user != null) {
-                gotoUserHome(user.getId(), user.getRole());
+                gotoUserHome(user);
             } else {
                 showProgress(false);
                 passwordView.setError(getString(R.string.error_incorrect_password));

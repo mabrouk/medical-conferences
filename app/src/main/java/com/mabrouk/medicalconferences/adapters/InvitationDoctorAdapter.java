@@ -32,7 +32,7 @@ public class InvitationDoctorAdapter extends RecyclerView.Adapter<InvitationDoct
         Invitation invitation = invitations.get(position);
         holder.doctorName.setText(String.format("To: %s %s", invitation.getDoctor().getFirstName(),
                 invitation.getDoctor().getLastName()));
-        holder.state.setText(Invitation.getStateTextForAdmin(invitation));
+        holder.state.setText(Invitation.getStateText(invitation));
     }
 
     @Override

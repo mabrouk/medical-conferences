@@ -99,7 +99,7 @@ public class InviteDoctorsActivity extends AppCompatActivity implements CancelCh
 
     Invitation createInvitationForDoctor(User doc) {
         int adminId = new UserPreferences(this).getUserId();
-        return new Invitation(0, adminId, doc.getId(), confId, Invitation.STATE_NEW, new Date().getTime());
+        return new Invitation(0, adminId, doc.getId(), confId, Invitation.STATE_PENDING, new Date().getTime());
     }
 
     void invitationSent(int id) {

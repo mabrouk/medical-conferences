@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.mabrouk.medicalconferences.model.Conference;
+import com.mabrouk.medicalconferences.model.Invitation;
 
 /**
  * Created by User on 12/2/2016.
@@ -17,6 +18,15 @@ public class ConferenceMapper {
                 cursor.getLong(cursor.getColumnIndex(ConferenceTable.COLUMN_DATE)),
                 cursor.getInt(cursor.getColumnIndex(ConferenceTable.COLUMN_CANCELLED)) == 1,
                 cursor.getLong(cursor.getColumnIndex(ConferenceTable.COLUMN_UPDATED_AT)));
+    }
+
+    public static Conference conferenceWithInvitationFromCursor(Cursor cursor, int doctorId) {
+        //just note that updated at here will be the invitation's one not the conference's
+        Conference conference = conferenceFromCursor(cursor);
+        conference.setInvitation(new Invitation(0, conference.getAdminId(), conference.getId(), doctorId,
+                cursor.getInt(cursor.getColumnIndex(InvitationTable.COLUMN_STATE)),
+                cursor.getLong(cursor.getColumnIndex(InvitationTable.COLUMN_UPDATED_AT))));
+        return conference;
     }
 
     public static ContentValues valuesForConference(Conference conference) {

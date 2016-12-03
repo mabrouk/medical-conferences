@@ -24,10 +24,13 @@
         <activity
             android:name=".ConferenceFormActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ConferenceDetailsActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".InviteDoctorsActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ConferenceDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".InviteDoctorsActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".DoctorHomeActivity"></activity>
     </application>
 
 </manifest>

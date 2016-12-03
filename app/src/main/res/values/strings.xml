@@ -12,7 +12,7 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
 
-
+    <string name="admin_home">Admin Home</string>
     <string name="home">Home</string>
     <string name="edit_conference">Edit Conference</string>
     <string name="new_conference">New Conference</string>

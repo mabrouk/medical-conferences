@@ -18,6 +18,8 @@ public class Conference implements Parcelable {
     boolean cancelled;
     long updatedAtTimestamp;
 
+    Invitation invitation;
+
     public Conference(int id, String name, int adminId, long dateTimestamp, boolean cancelled, long updatedAtTimestamp) {
         this.id = id;
         this.name = name;
@@ -57,6 +59,14 @@ public class Conference implements Parcelable {
 
     public void setUpdatedAtTimestamp(long updatedAtTimestamp) {
         this.updatedAtTimestamp = updatedAtTimestamp;
+    }
+
+    public Invitation getInvitation() {
+        return invitation;
+    }
+
+    public void setInvitation(Invitation invitation) {
+        this.invitation = invitation;
     }
 
     @Override

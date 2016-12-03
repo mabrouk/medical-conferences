@@ -5,24 +5,26 @@ package com.mabrouk.medicalconferences.model;
  */
 
 public class Invitation {
-    public static final int STATE_NEW = 1;
     public static final int STATE_PENDING = 2;
     public static final int STATE_ACCEPTED = 3;
     public static final int STATE_REJECTED = 4;
 
-    public static String getStateTextForAdmin(Invitation invitation) {
+    public static String getStateText(Invitation invitation) {
         switch (invitation.state) {
-            case STATE_NEW:
             case STATE_PENDING:
                 return "Pending";
-
             case STATE_ACCEPTED:
                 return "Attending";
             case STATE_REJECTED:
                 return "Rejected";
             default:
-                throw new IllegalStateException("Invitation state is undefined");
+//                throw new IllegalStateException("Invitation state is undefined");
+                return "Pending";
         }
+    }
+
+    public static boolean isNewInvitation(Invitation invitation, long userLastLogin) {
+        return invitation.state == STATE_PENDING && invitation.getUpdatedAtTimestamp() > userLastLogin;
     }
 
     final int id;

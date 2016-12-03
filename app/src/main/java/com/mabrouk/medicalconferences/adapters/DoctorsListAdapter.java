@@ -55,7 +55,7 @@ public class DoctorsListAdapter extends BaseAdapter {
         }else{
             viewHolder = (DoctorViewHolder) convertView.getTag();
         }
-        viewHolder.name.setText(String.format("Dr: %s %s", wrapper.doctor.getFirstName(),
+        viewHolder.name.setText(String.format("Dr %s %s", wrapper.doctor.getFirstName(),
                 wrapper.doctor.getLastName()));
         viewHolder.name.setChecked(wrapper.selected);
         viewHolder.name.setOnClickListener(v -> {

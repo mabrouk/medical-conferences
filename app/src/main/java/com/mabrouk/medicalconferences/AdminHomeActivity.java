@@ -1,10 +1,9 @@
 package com.mabrouk.medicalconferences;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,12 +13,9 @@ import android.widget.TextView;
 
 import com.mabrouk.medicalconferences.adapters.ConferencesAdapter;
 import com.mabrouk.medicalconferences.model.Conference;
-import com.mabrouk.medicalconferences.model.User;
 import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
 import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import rx.Observable;
@@ -27,15 +23,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class AdminHomeActivity extends AppCompatActivity {
-    private static final String EXTRA_ADMIN_ID = "admin_id";
     private static final int REQUEST_CREATE_CONFERENCE = 1;
     private static final int REQUEST_UPDATE_CONFERENCE = 2;
-
-    public static void startInstance(Activity activity, int adminId) {
-        Intent intent = new Intent(activity, AdminHomeActivity.class);
-        intent.putExtra(EXTRA_ADMIN_ID, adminId);
-        activity.startActivity(intent);
-    }
 
     ProgressBar progressBar;
     RecyclerView recyclerView;
@@ -53,11 +42,11 @@ public class AdminHomeActivity extends AppCompatActivity {
         addButton = (FloatingActionButton) findViewById(R.id.add_conference_button);
         emptyTextView = (TextView) findViewById(R.id.empty_text);
 
-        adminId = getIntent().getIntExtra(EXTRA_ADMIN_ID, 0);
+        adminId = new UserPreferences(this).getUserId();
         addButton.setOnClickListener(view ->
                 ConferenceFormActivity.startInstance(this, REQUEST_CREATE_CONFERENCE));
 
-        setTitle(R.string.home);
+        setTitle(R.string.admin_home);
         getConferencesList();
     }
 
