@@ -37,7 +37,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userPreferences = new UserPreferences(this);
-        userPreferences.logOut();
         int userId = userPreferences.getUserId();
         if(userId != 0) {
             int userRole = userPreferences.getUserRole();
@@ -75,8 +74,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void gotoUserHome(int userId, int userRole) {
-        Toast.makeText(this, "logged in user as " + userRole, Toast.LENGTH_SHORT).show();
-//        finish();
+        if(userRole == User.ROLE_ADMIN) {
+            AdminHomeActivity.startInstance(this, userId);
+        }
+        finish();
     }
 
     private void attemptLogin() {
@@ -181,11 +182,11 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final User user) {
             authTask = null;
-            showProgress(false);
 
             if (user != null) {
                 gotoUserHome(user.getId(), user.getRole());
             } else {
+                showProgress(false);
                 passwordView.setError(getString(R.string.error_incorrect_password));
                 passwordView.requestFocus();
             }

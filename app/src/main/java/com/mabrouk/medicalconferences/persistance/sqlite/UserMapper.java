@@ -28,6 +28,6 @@ public class UserMapper {
         return values;
     }
     private UserMapper() {
-        throw new IllegalStateException("Shouldn't instantiate instances of UserMapper, rather use static methods");
+        throw new IllegalStateException("Shouldn't instantiate instances of a Mapper, rather use static methods");
     }
 }

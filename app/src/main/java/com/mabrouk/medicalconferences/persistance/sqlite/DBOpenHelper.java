@@ -24,8 +24,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
             db.execSQL(ConferenceTable.CREATE_STATEMENT);
             db.execSQL(TopicTable.CREATE_STATEMENT);
             db.execSQL(InvitationTable.CREATE_STATEMENT);
-
-            CreateUsers.createUsers(db);
+            DBInitialData.populateDB(db);
         } catch (SQLException e) {
             e.printStackTrace();
         }
