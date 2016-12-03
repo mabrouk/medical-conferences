@@ -71,7 +71,7 @@ public class ConferenceFormActivity extends AppCompatActivity implements DatePic
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(!conference.getName().equals(s))
+                if(!conference.getName().equals(s.toString()))
                     changeExists = true;
             }
 
