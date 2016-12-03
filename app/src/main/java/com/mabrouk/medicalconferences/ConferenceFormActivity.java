@@ -159,7 +159,8 @@ public class ConferenceFormActivity extends AppCompatActivity implements DatePic
     @Override
     public void onBackPressed() {
         if(changeExists) {
-            CancelChangesDialogFragment fragment = new CancelChangesDialogFragment();
+            CancelChangesDialogFragment fragment =
+                    CancelChangesDialogFragment.createInstance("Changes exist. Are you sure you want to exit");
             fragment.show(getSupportFragmentManager(), "cancelChanges");
         } else {
             setResult(RESULT_CANCELED);

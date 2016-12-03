@@ -9,8 +9,16 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 public class CancelChangesDialogFragment extends DialogFragment {
-
+    private static final String ARG_MESSAGE = "message";
     private OnCancelChangesListener listener;
+
+    public static CancelChangesDialogFragment createInstance(String message) {
+        CancelChangesDialogFragment fragment = new CancelChangesDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_MESSAGE, message);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @NonNull
     @Override
@@ -24,7 +32,7 @@ public class CancelChangesDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Warning");
-        builder.setMessage("Changes exist. Are you sure you want to exit");
+        builder.setMessage(getArguments().getString(ARG_MESSAGE));
         builder.setNegativeButton("No", onClickListener);
         builder.setPositiveButton("Yes", onClickListener);
         return builder.create();

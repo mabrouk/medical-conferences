@@ -10,6 +10,21 @@ public class Invitation {
     public static final int STATE_ACCEPTED = 3;
     public static final int STATE_REJECTED = 4;
 
+    public static String getStateTextForAdmin(Invitation invitation) {
+        switch (invitation.state) {
+            case STATE_NEW:
+            case STATE_PENDING:
+                return "Pending";
+
+            case STATE_ACCEPTED:
+                return "Attending";
+            case STATE_REJECTED:
+                return "Rejected";
+            default:
+                throw new IllegalStateException("Invitation state is undefined");
+        }
+    }
+
     final int id;
     final int adminId;
     final int doctorId;
@@ -85,4 +100,5 @@ public class Invitation {
     public void setConference(Conference conference) {
         this.conference = conference;
     }
+
 }

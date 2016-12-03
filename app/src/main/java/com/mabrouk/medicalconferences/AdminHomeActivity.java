@@ -106,6 +106,28 @@ public class AdminHomeActivity extends AppCompatActivity {
         ConferenceFormActivity.startInstance(this, conference, REQUEST_UPDATE_CONFERENCE);
     }
 
+    public void deleteConference(Conference conference, int position) {
+        DBWrapper wrapper = DBWrapper.getInstance();
+        Observable.just(conference)
+                .map(wrapper::deleteConference)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(success -> {
+                    if(success)
+                        itemDeleted(position);
+                    else
+                        deleteError(new Exception("Couldn't delete"));
+                }, this::deleteError);
+    }
+
+    void itemDeleted(int position) {
+        adapter.itemDeleted(position);
+    }
+
+    void deleteError(Throwable e) {
+        e.printStackTrace();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if((requestCode == 1 || requestCode == 2) && resultCode == RESULT_OK) {

@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.mabrouk.medicalconferences.MedicalConferencesApplication;
 import com.mabrouk.medicalconferences.model.Conference;
+import com.mabrouk.medicalconferences.model.Invitation;
+import com.mabrouk.medicalconferences.model.Topic;
 import com.mabrouk.medicalconferences.model.User;
 import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
 
@@ -46,6 +48,30 @@ public class DBWrapper {
             return null;
         cursor.moveToFirst();
         return UserMapper.userFromCursor(cursor);
+    }
+
+    public User getUserById(int id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(UserTable.TABLE_NAME, null,
+                String.format("%s = ?", UserTable.COLUMN_ID),
+                new String[]{String.valueOf(id)}, null, null, null);
+
+        cursor.moveToFirst();
+        return UserMapper.userFromCursor(cursor);
+    }
+
+    public List<User> getNotInvitedDoctors(int confId) {
+        String query = String.format("SELECT * FROM %s WHERE %s = ? AND %s NOT IN (SELECT %s FROM %s WHERE %s = ? );",
+                UserTable.TABLE_NAME, UserTable.COLUMN_ROLE, UserTable.COLUMN_ID, InvitationTable.COLUMN_DOCTOR_ID,
+                InvitationTable.TABLE_NAME, InvitationTable.COLUMN_CONFERENCE_ID);
+        Cursor cursor = dbHelper.getReadableDatabase().rawQuery(query, new String[] { String.valueOf(User.ROLE_DOCTOR),
+                String.valueOf(confId)});
+
+        List<User> doctors = new ArrayList<>(cursor.getCount());
+        while(cursor.moveToNext()) {
+            doctors.add(UserMapper.userFromCursor(cursor));
+        }
+        return doctors;
     }
 
     public void updateLoggedInUser(User user) {
@@ -94,8 +120,7 @@ public class DBWrapper {
     }
 
     public int insertConference(Conference conference) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        return (int) db.insert(ConferenceTable.TABLE_NAME, null, ConferenceMapper.valuesForConference(conference));
+        return insert(ConferenceMapper.valuesForConference(conference), ConferenceTable.TABLE_NAME);
     }
 
     public int updateConference(Conference conference) {
@@ -112,4 +137,65 @@ public class DBWrapper {
         cursor.moveToFirst();
         return ConferenceMapper.conferenceFromCursor(cursor);
     }
+
+    public List<Invitation> getInvitationsForConference(int conferenceId) {
+        try {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            final String invTable = InvitationTable.TABLE_NAME;
+            final String userTable = UserTable.TABLE_NAME;
+            Cursor cursor = db.rawQuery(String.format("SELECT I.%s, %s, %s, %s, %s, D.%s, D.%s FROM %s AS I JOIN %s AS D" +
+                    " ON I.%s = D.%s WHERE %s = ? ORDER BY I.%s DESC", InvitationTable.COLUMN_ID,
+                    InvitationTable.COLUMN_ADMIN_ID, InvitationTable.COLUMN_CONFERENCE_ID, InvitationTable.COLUMN_STATE,
+                    InvitationTable.COLUMN_DOCTOR_ID, UserTable.COLUMN_FIRST_NAME, UserTable.COLUMN_LAST_NAME,
+                    invTable, userTable, InvitationTable.COLUMN_DOCTOR_ID, UserTable.COLUMN_ID,
+                    InvitationTable.COLUMN_CONFERENCE_ID, InvitationTable.COLUMN_UPDATED_AT),
+                    new String[] {String.valueOf(conferenceId)});
+
+            List<Invitation> invitations = new ArrayList<>(cursor.getCount());
+            while(cursor.moveToNext()) {
+                invitations.add(InvitationMapper.getInvitationWithDoctorFromCursor(cursor));
+            }
+            return invitations;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Topic> getConferenceTopics(int conferenceId) {
+        try {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            String query = String.format("SELECT T.%s, %s, %s, %s, %s, %s, %s FROM %s AS T JOIN %s AS D ON T.%s = D.%s" +
+                    " WHERE %s = ? ORDER BY %s DESC", TopicTable.COLUMN_ID, TopicTable.COLUMN_DESCRIPTION,
+                    TopicTable.COLUMN_CREATED_AT, TopicTable.COLUMN_CREATOR_ID, TopicTable.COLUMN_CONFERENCE_ID,
+                    UserTable.COLUMN_FIRST_NAME, UserTable.COLUMN_LAST_NAME, TopicTable.TABLE_NAME, UserTable.TABLE_NAME,
+                    TopicTable.COLUMN_CREATOR_ID, UserTable.COLUMN_ID , TopicTable.COLUMN_CONFERENCE_ID,
+                    TopicTable.COLUMN_CREATED_AT);
+
+            Cursor cursor = db.rawQuery(query,
+                    new String[] {String.valueOf(conferenceId)});
+
+            List<Topic> topics = new ArrayList<>(cursor.getCount());
+            while (cursor.moveToNext())
+                topics.add(TopicMapper.topicFromCursor(cursor));
+            return topics;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public int insertTopic(Topic topic) {
+        return insert(TopicMapper.valuesForTopic(topic), TopicTable.TABLE_NAME);
+    }
+
+    public int insertInvitation(Invitation invitation) {
+        return insert(InvitationMapper.valuesForInvitation(invitation), InvitationTable.TABLE_NAME);
+    }
+
+    int insert(ContentValues values, String table) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        return (int) db.insert(table, null, values);
+    }
+
 }

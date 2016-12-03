@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.mabrouk.medicalconferences.AdminHomeActivity;
+import com.mabrouk.medicalconferences.ConferenceDetailsActivity;
 import com.mabrouk.medicalconferences.R;
 import com.mabrouk.medicalconferences.Util.DateUtils;
 import com.mabrouk.medicalconferences.model.Conference;
@@ -81,31 +82,14 @@ public class ConferencesAdapter extends RecyclerView.Adapter<ConferencesAdapter.
         holder.name.setText(conference.getName());
         Date date = new Date(conference.getDateTimestamp());
         holder.dateTime.setText(String.format("Date: %s, at: %s", DateUtils.getDate(date), DateUtils.getTime(date)));
-        holder.deleteButton.setOnClickListener(v -> deleteConference(conference, position));
+        holder.deleteButton.setOnClickListener(v -> activity.deleteConference(conference, position));
         holder.editButton.setOnClickListener(v -> activity.editConference(conference));
+        holder.itemView.setOnClickListener(v -> ConferenceDetailsActivity.startInstance(activity, conference));
     }
 
-    void deleteConference(Conference conference, int position) {
-        DBWrapper wrapper = DBWrapper.getInstance();
-        Observable.just(conference)
-                .map(wrapper::deleteConference)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(success -> {
-                    if(success)
-                        itemDeleted(position);
-                    else
-                        deleteError(new Exception("Couldn't delete"));
-                }, this::deleteError);
-    }
-
-    void itemDeleted(int position) {
+    public void itemDeleted(int position) {
         conferences.remove(position);
         notifyItemRemoved(position);
-    }
-
-    void deleteError(Throwable e) {
-        e.printStackTrace();
     }
 
     @Override

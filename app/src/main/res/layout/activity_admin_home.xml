@@ -37,5 +37,6 @@
         android:src="@android:drawable/ic_input_add"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
+        android:tint="#fff"
         android:layout_gravity="bottom|right"/>
 </FrameLayout>
