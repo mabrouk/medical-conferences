@@ -75,4 +75,13 @@ public class TopicsFragment extends Fragment {
     void gotError(Throwable e) {
         e.printStackTrace();
     }
+
+    public void topicAdded(int topicId) {
+        Observable.just(topicId)
+                .map(DBWrapper.getInstance()::getTopicById)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(topic -> adapter.addTopic(topic),
+                        e -> e.printStackTrace());
+    }
 }

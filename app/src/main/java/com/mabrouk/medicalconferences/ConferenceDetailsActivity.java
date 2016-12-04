@@ -14,9 +14,12 @@ import android.widget.TextView;
 
 import com.mabrouk.medicalconferences.Util.DateUtils;
 import com.mabrouk.medicalconferences.fragments.InvitedDoctorsFragment;
+import com.mabrouk.medicalconferences.fragments.NewTopicDialogFragment;
 import com.mabrouk.medicalconferences.fragments.TopicsFragment;
 import com.mabrouk.medicalconferences.model.Conference;
 import com.mabrouk.medicalconferences.model.Invitation;
+import com.mabrouk.medicalconferences.model.Topic;
+import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
 import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
 
 import java.util.Date;
@@ -25,16 +28,14 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class ConferenceDetailsActivity extends AppCompatActivity {
+public class ConferenceDetailsActivity extends AppCompatActivity implements NewTopicDialogFragment.OnTopicAddedListener {
     private static final String EXTRA_CONFERENCE = "conference";
     private static final String EXTRA_MODE = "mode";
     private static final String EXTRA_STATE = "state";
 
     private static final int REQUEST_INVITE = 1;
-    private static final int REQUEST_TOPIC= 2;
     private static final int MODE_ADMIN = 0;
     private static final int MODE_DOCTOR = 1;
-
 
 
     public static void startInstance(Activity activity, Conference conference) {
@@ -70,12 +71,13 @@ public class ConferenceDetailsActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         addFab = (FloatingActionButton) findViewById(R.id.add_button);
 
-        addFab.setVisibility(mode == MODE_DOCTOR ? View.INVISIBLE : View.GONE);
+        addFab.setVisibility(mode == MODE_DOCTOR ? View.GONE : View.VISIBLE);
         addFab.setOnClickListener(v -> {
             if (mode == MODE_ADMIN) {
                 InviteDoctorsActivity.startInstance(this, conference.getId(), REQUEST_INVITE);
             }else {
-
+                NewTopicDialogFragment dialogFragment = new NewTopicDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "new_topic");
             }
         });
 
@@ -126,6 +128,22 @@ public class ConferenceDetailsActivity extends AppCompatActivity {
     void addNewInvitations(Intent data) {
         int[] newInvitations = data.getIntArrayExtra(InviteDoctorsActivity.EXTRA_NEW_INVITATIONS);
         adapter.invitedDoctorsFragment.addNewInvitations(newInvitations);
+    }
+
+    @Override
+    public void onTopicAdded(String topic) {
+        Observable.just(topic)
+                .map(this::createTopic)
+                .map(DBWrapper.getInstance()::insertTopic)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(id -> adapter.topicsFragment.topicAdded(id),
+                        e -> e.printStackTrace());
+    }
+
+    Topic createTopic(String topic) {
+        int doctorId = new UserPreferences(this).getUserId();
+        return new Topic(0, topic, new Date().getTime(), doctorId, conference.getId());
     }
 
     class PagerAdapter extends FragmentPagerAdapter {

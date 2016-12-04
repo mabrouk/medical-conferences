@@ -230,4 +230,13 @@ public class DBWrapper {
         today.set(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DATE), 0, 0);
         return today.getTimeInMillis();
     }
+
+    public Topic getTopicById(int id) {
+        String query = String.format("SELECT * FROM %s WHERE %s = ?", TopicTable.TABLE_NAME, TopicTable.COLUMN_ID);
+        Cursor cursor = dbHelper.getReadableDatabase().rawQuery(query, new String[]{String.valueOf(id)});
+        cursor.moveToFirst();
+        Topic topic = TopicMapper.topicFromCursor(cursor);
+        topic.setCreator(getUserById(topic.getCreatorId()));
+        return topic;
+    }
 }

@@ -22,6 +22,17 @@ public class UserMapper {
                 cursor.getLong(cursor.getColumnIndex(UserTable.COLUMN_LAST_LOGIN_TIMESTAMP)));
     }
 
+    public static ContentValues valuesForUser(User user) {
+        ContentValues values = new ContentValues();
+        values.put(UserTable.COLUMN_FIRST_NAME, user.getFirstName());
+        values.put(UserTable.COLUMN_LAST_NAME, user.getLastName());
+        values.put(UserTable.COLUMN_PASSWORD, user.getPassword());
+        values.put(UserTable.COLUMN_USER_EMAIL, user.getEmail());
+        values.put(UserTable.COLUMN_ROLE, user.getRole());
+        values.put(UserTable.COLUMN_LAST_LOGIN_TIMESTAMP, user.getLastLoginTimestamp());
+        return values;
+    }
+
     public static ContentValues getUpdateLastLoginContentValues() {
         ContentValues values = new ContentValues();
         values.put(UserTable.COLUMN_LAST_LOGIN_TIMESTAMP, new Date().getTime());

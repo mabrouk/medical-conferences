@@ -6,8 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.mabrouk.medicalconferences.MedicalConferencesApplication;
 import com.mabrouk.medicalconferences.R;
 import com.mabrouk.medicalconferences.model.Topic;
+import com.mabrouk.medicalconferences.model.User;
+import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
 
 import java.util.List;
 
@@ -17,8 +20,10 @@ import java.util.List;
 
 public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.TopicsViewHolder>{
     List<Topic> topicList;
+    int userId;
     public TopicsAdapter(List<Topic> topics) {
         this.topicList = topics;
+        userId = new UserPreferences(MedicalConferencesApplication.getInstance()).getUserId();
     }
 
     @Override
@@ -30,14 +35,20 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.TopicsView
     @Override
     public void onBindViewHolder(TopicsViewHolder holder, int position) {
         Topic topic = topicList.get(position);
-        holder.doctorName.setText(String.format("Doctor: %s %s", topic.getCreator().getFirstName(),
-                topic.getCreator().getLastName()));
+        String doctorName = topic.getCreatorId() == userId ? "You" : topic.getCreator().getFirstName() +
+            topic.getCreator().getLastName();
+        holder.doctorName.setText("Suggested by: " + doctorName);
         holder.name.setText(topic.getDescription());
     }
 
     @Override
     public int getItemCount() {
         return topicList.size();
+    }
+
+    public void addTopic(Topic topic) {
+        topicList.add(0, topic);
+        notifyItemRangeInserted(0, 1);
     }
 
     static class TopicsViewHolder extends RecyclerView.ViewHolder {

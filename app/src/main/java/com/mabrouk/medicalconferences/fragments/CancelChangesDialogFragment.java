@@ -45,7 +45,7 @@ public class CancelChangesDialogFragment extends DialogFragment {
             listener = (OnCancelChangesListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnCancelChangesListener");
         }
     }
 

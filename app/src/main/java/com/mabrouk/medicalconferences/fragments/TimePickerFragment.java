@@ -52,7 +52,7 @@ public class TimePickerFragment extends DialogFragment {
             listener = (OnTimeSelectedListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnTimeSelectedListener");
         }
     }
 
