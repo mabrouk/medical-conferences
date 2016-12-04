@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.mabrouk.medicalconferences.Util.DateUtils;
+import com.mabrouk.medicalconferences.util.DateUtils;
 import com.mabrouk.medicalconferences.fragments.InvitedDoctorsFragment;
 import com.mabrouk.medicalconferences.fragments.NewTopicDialogFragment;
 import com.mabrouk.medicalconferences.fragments.TopicsFragment;

@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -88,12 +90,21 @@ public class DoctorHomeActivity extends AppCompatActivity {
                     newInvitationsCount++;
             }
             if(newInvitationsCount > 0) {
-                notificationsText.setText(String.format("You have %d pending invitations, %d %s new",
-                        size, newInvitationsCount, newInvitationsCount == 1 ? "is" : "are"));
+                notificationsText.setText(notificationMessage(size, newInvitationsCount));
             } else {
                 notificationsText.setText(String.format("You have %d pending invitations", invitations.size()));
             }
         }
+    }
+
+    SpannableString notificationMessage(int totalInvitations, int newInvitations) {
+        String msg = String.format("You have %d pending invitations, %d %s new",
+                totalInvitations, newInvitations, newInvitations == 1 ? "is" : "are");
+        int start = msg.indexOf(",") + 1;
+        SpannableString spannableString = new SpannableString(msg);
+        spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent)),
+                start, msg.length(), 0);
+        return spannableString;
     }
 
     void gotUpcomingConferences(List<Conference> conferences) {

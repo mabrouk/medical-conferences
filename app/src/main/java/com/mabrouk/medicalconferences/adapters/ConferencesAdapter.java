@@ -12,7 +12,7 @@ import com.mabrouk.medicalconferences.AdminHomeActivity;
 import com.mabrouk.medicalconferences.ConferenceDetailsActivity;
 import com.mabrouk.medicalconferences.DoctorHomeActivity;
 import com.mabrouk.medicalconferences.R;
-import com.mabrouk.medicalconferences.Util.DateUtils;
+import com.mabrouk.medicalconferences.util.DateUtils;
 import com.mabrouk.medicalconferences.model.Conference;
 import com.mabrouk.medicalconferences.model.Invitation;
 
@@ -182,7 +182,7 @@ public class ConferencesAdapter extends RecyclerView.Adapter<ConferencesAdapter.
             holder.action2Button.setOnClickListener(view -> activity.rejectConferenceInvitation(data));
             holder.itemView.setOnClickListener(v -> ConferenceDetailsActivity.startInstance(activity, data));
             boolean isNewInvitation = Invitation.isNewInvitation(invitation, activity.getDoctorLastLogin());
-            holder.itemView.setBackgroundColor(isNewInvitation ? 0xFFF48FB1 : 0x00);
+            holder.itemView.setBackgroundColor(isNewInvitation ? activity.getResources().getColor(R.color.colorAccent) : 0x00);
         }
     }
 }

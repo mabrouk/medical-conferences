@@ -1,4 +1,4 @@
-package com.mabrouk.medicalconferences.Util;
+package com.mabrouk.medicalconferences.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

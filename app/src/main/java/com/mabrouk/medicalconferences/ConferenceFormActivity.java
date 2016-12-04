@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.mabrouk.medicalconferences.Util.DateUtils;
+import com.mabrouk.medicalconferences.util.DateUtils;
 import com.mabrouk.medicalconferences.fragments.CancelChangesDialogFragment;
 import com.mabrouk.medicalconferences.fragments.DatePickerFragment;
 import com.mabrouk.medicalconferences.fragments.TimePickerFragment;
