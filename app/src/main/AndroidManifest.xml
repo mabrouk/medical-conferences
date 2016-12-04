@@ -30,7 +30,10 @@
         <activity
             android:name=".InviteDoctorsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".DoctorHomeActivity"></activity>
+        <activity android:name=".DoctorHomeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".CalendarActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

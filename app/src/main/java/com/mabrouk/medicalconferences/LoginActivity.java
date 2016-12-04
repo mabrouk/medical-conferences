@@ -77,7 +77,11 @@ public class LoginActivity extends AppCompatActivity {
                 .subscribe(user -> {
                     overridePendingTransition(0, 0);
                     gotoUserHome(user);
-                });
+                }, this::gotError);
+    }
+
+    void gotError(Throwable e) {
+        e.printStackTrace();
     }
 
     private void gotoUserHome(User user) {

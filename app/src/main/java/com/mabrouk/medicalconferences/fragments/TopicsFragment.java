@@ -77,6 +77,7 @@ public class TopicsFragment extends Fragment {
     }
 
     public void topicAdded(int topicId) {
+        emptyTextView.setVisibility(View.GONE);
         Observable.just(topicId)
                 .map(DBWrapper.getInstance()::getTopicById)
                 .subscribeOn(Schedulers.io())

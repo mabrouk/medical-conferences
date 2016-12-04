@@ -50,7 +50,7 @@ public class DatePickerFragment extends DialogFragment {
 
         DatePickerDialog dialog = new DatePickerDialog(getActivity(), onDateSetListener, args.getInt(ARG_YEAR),
                 args.getInt(ARG_MONTH), args.getInt(ARG_DAY));
-        dialog.getDatePicker().setMinDate(new Date().getTime());
+        dialog.getDatePicker().setMinDate(new Date().getTime() - 20000);
 
 
         return dialog;

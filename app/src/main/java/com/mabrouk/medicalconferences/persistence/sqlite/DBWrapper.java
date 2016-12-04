@@ -210,7 +210,15 @@ public class DBWrapper {
         return result;
     }
 
+    public List<Conference> getAllConferencesForDoctor(int doctorId) {
+        return conferencesForDoctor(doctorId, 0);
+    }
+
     public List<Conference> getUpcomingConferencesForDoctor(int doctorId) {
+        return conferencesForDoctor(doctorId, getTodayTimeMillis());
+    }
+
+    public List<Conference> conferencesForDoctor(int doctorId, long timestamp) {
         String query = String.format("SELECT C.%s, C.%s, C.%s, C.%s, C.%s, I.%s, I.%s FROM %s AS C JOIN %s AS I " +
                         "ON C.%s = I.%s WHERE %s = ? AND %s = ? AND %s > ? ORDER BY C.%s",
                 ConferenceTable.COLUMN_ID, ConferenceTable.COLUMN_ADMIN_ID, ConferenceTable.COLUMN_NAME,
@@ -219,12 +227,11 @@ public class DBWrapper {
                 ConferenceTable.COLUMN_ID, InvitationTable.COLUMN_CONFERENCE_ID, InvitationTable.COLUMN_DOCTOR_ID,
                 ConferenceTable.COLUMN_CANCELLED, ConferenceTable.COLUMN_DATE, ConferenceTable.COLUMN_DATE);
         Cursor cursor = dbHelper.getReadableDatabase().rawQuery(query,
-                new String[]{String.valueOf(doctorId), "0", String.valueOf(getTodayTimeMillis())});
+                new String[]{String.valueOf(doctorId), "0", String.valueOf(timestamp)});
         List<Conference> conferences = new ArrayList<>();
         while (cursor.moveToNext())
             conferences.add(ConferenceMapper.conferenceWithInvitationFromCursor(cursor, doctorId));
         return conferences;
-
     }
 
     public boolean updateDoctorInvitation(int doctorId, int conferenceId, int state) {

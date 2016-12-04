@@ -10,6 +10,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,8 @@ public class DoctorHomeActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         notificationsLayout = findViewById(R.id.notification_layout);
 
+        setTitle(R.string.home);
+
         getPendingInvitations();
         getUpcomingConferences();
     }
@@ -66,7 +69,7 @@ public class DoctorHomeActivity extends AppCompatActivity {
                 .map(DBWrapper.getInstance()::getPendingInvitations)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::gotPendingInvitations, e -> e.printStackTrace());
+                .subscribe(this::gotPendingInvitations, this::gotError);
     }
 
     void getUpcomingConferences() {
@@ -74,7 +77,11 @@ public class DoctorHomeActivity extends AppCompatActivity {
                 .map(DBWrapper.getInstance()::getUpcomingConferencesForDoctor)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::gotUpcomingConferences, e -> e.printStackTrace());
+                .subscribe(this::gotUpcomingConferences, this::gotError);
+    }
+
+    void gotError(Throwable e) {
+        e.printStackTrace();
     }
 
     void gotPendingInvitations(List<Invitation> invitations) {
@@ -135,7 +142,7 @@ public class DoctorHomeActivity extends AppCompatActivity {
                 .subscribe(b -> {
                     adapter.conferenceStateChanged(conference);
                     removeNotification(conference);
-                });
+                }, this::gotError);
     }
 
     void removeNotification(Conference conference) {
@@ -161,7 +168,7 @@ public class DoctorHomeActivity extends AppCompatActivity {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         }else if(item.getItemId() == R.id.calendar) {
-            Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+            CalendarActivity.startInstance(this);
         }
         return super.onOptionsItemSelected(item);
     }

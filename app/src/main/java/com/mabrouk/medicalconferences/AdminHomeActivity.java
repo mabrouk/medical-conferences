@@ -120,6 +120,7 @@ public class AdminHomeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if((requestCode == 1 || requestCode == 2) && resultCode == RESULT_OK) {
+            emptyTextView.setVisibility(View.GONE);
             int confId = data.getIntExtra(ConferenceFormActivity.EXTRA_CONFERENCE, 0);
             Observable.just(confId)
                     .map(DBWrapper.getInstance()::getConferenceById)

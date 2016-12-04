@@ -43,7 +43,7 @@ public class ConferenceDetailsActivity extends AppCompatActivity implements NewT
         intent.putExtra(EXTRA_CONFERENCE, conference);
         int mode = activity instanceof AdminHomeActivity ? MODE_ADMIN : MODE_DOCTOR;
         intent.putExtra(EXTRA_MODE, mode);
-        if(mode == MODE_DOCTOR)
+        if (mode == MODE_DOCTOR)
             intent.putExtra(EXTRA_STATE, conference.getInvitation().getState());
         activity.startActivity(intent);
     }
@@ -57,6 +57,7 @@ public class ConferenceDetailsActivity extends AppCompatActivity implements NewT
 
     int mode;
     Conference conference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,18 +73,12 @@ public class ConferenceDetailsActivity extends AppCompatActivity implements NewT
         addFab = (FloatingActionButton) findViewById(R.id.add_button);
 
         addFab.setVisibility(mode == MODE_DOCTOR ? View.GONE : View.VISIBLE);
-        addFab.setOnClickListener(v -> {
-            if (mode == MODE_ADMIN) {
-                InviteDoctorsActivity.startInstance(this, conference.getId(), REQUEST_INVITE);
-            }else {
-                NewTopicDialogFragment dialogFragment = new NewTopicDialogFragment();
-                dialogFragment.show(getSupportFragmentManager(), "new_topic");
-            }
-        });
+        addFab.setOnClickListener(this::fabClicked);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -91,7 +86,8 @@ public class ConferenceDetailsActivity extends AppCompatActivity implements NewT
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
         });
 
         date.setText("Date: " + DateUtils.getDate(new Date(conference.getDateTimestamp())));
@@ -99,11 +95,20 @@ public class ConferenceDetailsActivity extends AppCompatActivity implements NewT
         adapter = new PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
-        if(mode == MODE_ADMIN) {
+        if (mode == MODE_ADMIN) {
             getAdmin();
-        }else{
+        } else {
             int state = getIntent().getIntExtra(EXTRA_STATE, 0);
             extraInfo.setText("State: " + Invitation.getStateText(state));
+        }
+    }
+
+    void fabClicked(View fab) {
+        if (mode == MODE_ADMIN) {
+            InviteDoctorsActivity.startInstance(this, conference.getId(), REQUEST_INVITE);
+        } else {
+            NewTopicDialogFragment dialogFragment = new NewTopicDialogFragment();
+            dialogFragment.show(getSupportFragmentManager(), "new_topic");
         }
     }
 
@@ -113,14 +118,18 @@ public class ConferenceDetailsActivity extends AppCompatActivity implements NewT
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> extraInfo.setText("Admin: " + user.getFirstName() + " " + user.getLastName()),
-                        e -> e.printStackTrace());
+                        this::gotError);
+    }
+
+    void gotError(Throwable e) {
+        e.printStackTrace();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_INVITE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_INVITE && resultCode == RESULT_OK) {
             addNewInvitations(data);
-        }else{
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -137,8 +146,7 @@ public class ConferenceDetailsActivity extends AppCompatActivity implements NewT
                 .map(DBWrapper.getInstance()::insertTopic)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(id -> adapter.topicsFragment.topicAdded(id),
-                        e -> e.printStackTrace());
+                .subscribe(id -> adapter.topicsFragment.topicAdded(id), this::gotError);
     }
 
     Topic createTopic(String topic) {
