@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.mabrouk.medicalconferences.adapters.ConferencesAdapter;
 import com.mabrouk.medicalconferences.model.Conference;
-import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
-import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
+import com.mabrouk.medicalconferences.persistence.preferences.UserPreferences;
+import com.mabrouk.medicalconferences.persistence.sqlite.DBWrapper;
 
 import java.util.List;
 
@@ -95,10 +95,10 @@ public class AdminHomeActivity extends AppCompatActivity {
         ConferenceFormActivity.startInstance(this, conference, REQUEST_UPDATE_CONFERENCE);
     }
 
-    public void deleteConference(Conference conference, int position) {
+    public void cancelConference(Conference conference, int position) {
         DBWrapper wrapper = DBWrapper.getInstance();
         Observable.just(conference)
-                .map(wrapper::deleteConference)
+                .map(wrapper::cancelConference)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(success -> {

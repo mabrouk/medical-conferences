@@ -14,8 +14,8 @@ import com.mabrouk.medicalconferences.adapters.DoctorsListAdapter;
 import com.mabrouk.medicalconferences.fragments.CancelChangesDialogFragment;
 import com.mabrouk.medicalconferences.model.Invitation;
 import com.mabrouk.medicalconferences.model.User;
-import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
-import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
+import com.mabrouk.medicalconferences.persistence.preferences.UserPreferences;
+import com.mabrouk.medicalconferences.persistence.sqlite.DBWrapper;
 
 import java.util.ArrayList;
 import java.util.Date;

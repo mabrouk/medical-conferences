@@ -13,16 +13,14 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mabrouk.medicalconferences.model.User;
-import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
-import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
+import com.mabrouk.medicalconferences.persistence.preferences.UserPreferences;
+import com.mabrouk.medicalconferences.persistence.sqlite.DBWrapper;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;

@@ -1,9 +1,8 @@
-package com.mabrouk.medicalconferences.persistance.sqlite;
+package com.mabrouk.medicalconferences.persistence.sqlite;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.mabrouk.medicalconferences.model.Conference;
 import com.mabrouk.medicalconferences.model.User;
 
 import java.util.Date;

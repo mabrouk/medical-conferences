@@ -12,8 +12,7 @@ import android.widget.TextView;
 import com.mabrouk.medicalconferences.R;
 import com.mabrouk.medicalconferences.adapters.InvitationDoctorAdapter;
 import com.mabrouk.medicalconferences.model.Invitation;
-import com.mabrouk.medicalconferences.model.User;
-import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
+import com.mabrouk.medicalconferences.persistence.sqlite.DBWrapper;
 
 import java.util.List;
 

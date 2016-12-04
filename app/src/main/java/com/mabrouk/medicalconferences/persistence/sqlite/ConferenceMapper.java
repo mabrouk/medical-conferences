@@ -1,10 +1,12 @@
-package com.mabrouk.medicalconferences.persistance.sqlite;
+package com.mabrouk.medicalconferences.persistence.sqlite;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.mabrouk.medicalconferences.model.Conference;
 import com.mabrouk.medicalconferences.model.Invitation;
+
+import java.util.Date;
 
 /**
  * Created by User on 12/2/2016.
@@ -18,6 +20,13 @@ public class ConferenceMapper {
                 cursor.getLong(cursor.getColumnIndex(ConferenceTable.COLUMN_DATE)),
                 cursor.getInt(cursor.getColumnIndex(ConferenceTable.COLUMN_CANCELLED)) == 1,
                 cursor.getLong(cursor.getColumnIndex(ConferenceTable.COLUMN_UPDATED_AT)));
+    }
+
+    public static ContentValues cancelContentValues(Conference conference) {
+        ContentValues values = new ContentValues();
+        values.put(ConferenceTable.COLUMN_CANCELLED, 1);
+        values.put(ConferenceTable.COLUMN_UPDATED_AT, new Date().getTime());
+        return values;
     }
 
     public static Conference conferenceWithInvitationFromCursor(Cursor cursor, int doctorId) {

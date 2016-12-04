@@ -1,4 +1,4 @@
-package com.mabrouk.medicalconferences.persistance.sqlite;
+package com.mabrouk.medicalconferences.persistence.sqlite;
 
 /**
  * Created by User on 12/2/2016.

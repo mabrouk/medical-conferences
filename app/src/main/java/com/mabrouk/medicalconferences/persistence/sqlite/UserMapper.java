@@ -1,4 +1,4 @@
-package com.mabrouk.medicalconferences.persistance.sqlite;
+package com.mabrouk.medicalconferences.persistence.sqlite;
 
 import android.content.ContentValues;
 import android.database.Cursor;

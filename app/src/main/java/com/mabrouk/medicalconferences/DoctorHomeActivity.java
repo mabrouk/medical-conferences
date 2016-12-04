@@ -9,20 +9,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mabrouk.medicalconferences.adapters.ConferencesAdapter;
 import com.mabrouk.medicalconferences.model.Conference;
 import com.mabrouk.medicalconferences.model.Invitation;
 import com.mabrouk.medicalconferences.model.User;
-import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
-import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
+import com.mabrouk.medicalconferences.persistence.preferences.UserPreferences;
+import com.mabrouk.medicalconferences.persistence.sqlite.DBWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class DoctorHomeActivity extends AppCompatActivity {
@@ -149,6 +149,8 @@ public class DoctorHomeActivity extends AppCompatActivity {
             new UserPreferences(this).logOut();
             startActivity(new Intent(this, LoginActivity.class));
             finish();
+        }else if(item.getItemId() == R.id.calendar) {
+            Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }

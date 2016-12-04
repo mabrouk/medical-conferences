@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.mabrouk.medicalconferences.R;
 import com.mabrouk.medicalconferences.adapters.TopicsAdapter;
 import com.mabrouk.medicalconferences.model.Topic;
-import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
+import com.mabrouk.medicalconferences.persistence.sqlite.DBWrapper;
 
 import java.util.List;
 

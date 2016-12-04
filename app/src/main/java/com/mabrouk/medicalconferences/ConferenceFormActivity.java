@@ -15,16 +15,14 @@ import com.mabrouk.medicalconferences.fragments.CancelChangesDialogFragment;
 import com.mabrouk.medicalconferences.fragments.DatePickerFragment;
 import com.mabrouk.medicalconferences.fragments.TimePickerFragment;
 import com.mabrouk.medicalconferences.model.Conference;
-import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
-import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
-import com.mabrouk.medicalconferences.persistance.sqlite.UserTable;
+import com.mabrouk.medicalconferences.persistence.preferences.UserPreferences;
+import com.mabrouk.medicalconferences.persistence.sqlite.DBWrapper;
 
 import java.util.Calendar;
 import java.util.Date;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.internal.operators.BufferUntilSubscriber;
 import rx.schedulers.Schedulers;
 
 public class ConferenceFormActivity extends AppCompatActivity implements DatePickerFragment.OnDateSelectedListener,

@@ -1,4 +1,4 @@
-package com.mabrouk.medicalconferences.persistance.sqlite;
+package com.mabrouk.medicalconferences.persistence.sqlite;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,7 +10,7 @@ import com.mabrouk.medicalconferences.model.Conference;
 import com.mabrouk.medicalconferences.model.Invitation;
 import com.mabrouk.medicalconferences.model.Topic;
 import com.mabrouk.medicalconferences.model.User;
-import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
+import com.mabrouk.medicalconferences.persistence.preferences.UserPreferences;
 
 
 import java.util.ArrayList;
@@ -22,6 +22,9 @@ import java.util.List;
  */
 
 public class DBWrapper {
+    private static final String DB_NAME = "med.db";
+    private static final String TEST_DB_NAME = "med_test.db";
+
     private static DBWrapper instance;
 
     public static DBWrapper getInstance() {
@@ -30,21 +33,29 @@ public class DBWrapper {
 
     public static void init(Context context) {
         if (instance == null) {
-            instance = new DBWrapper(context);
+            instance = new DBWrapper(context, DB_NAME);
         }
+    }
+
+    static void initForTesting(Context context) {
+        if(instance != null)
+            instance.dbHelper.close();
+
+        context.deleteDatabase(TEST_DB_NAME);
+        instance = new DBWrapper(context, TEST_DB_NAME);
     }
 
     private DBOpenHelper dbHelper;
 
-    private DBWrapper(Context context) {
-        dbHelper = new DBOpenHelper(context, null);
+    private DBWrapper(Context context, String dbName) {
+        dbHelper = new DBOpenHelper(context, dbName, null);
     }
 
-    public User getUser(String userName, String password) {
+    public User getUser(String email, String password) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.query(UserTable.TABLE_NAME, null,
                 String.format("%s = ? AND %s = ?", UserTable.COLUMN_USER_EMAIL, UserTable.COLUMN_PASSWORD),
-                new String[]{userName, password}, null, null, null);
+                new String[]{email, password}, null, null, null);
         if (cursor.getCount() == 0)
             return null;
         cursor.moveToFirst();
@@ -103,13 +114,13 @@ public class DBWrapper {
         return null;
     }
 
-    public boolean deleteConference(Conference conference) {
+    public boolean cancelConference(Conference conference) {
         int currentUserId = new UserPreferences(MedicalConferencesApplication.getInstance()).getUserId();
         if (currentUserId != conference.getAdminId()) {
-            throw new IllegalArgumentException("Current user cannot delete this conference");
+            throw new IllegalArgumentException("Current user cannot cancel this conference");
         }
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        return db.delete(ConferenceTable.TABLE_NAME,
+        return db.update(ConferenceTable.TABLE_NAME, ConferenceMapper.cancelContentValues(conference),
                 ConferenceTable.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(conference.getId())}) != 0;
     }
@@ -185,14 +196,14 @@ public class DBWrapper {
 
     public List<Invitation> getPendingInvitations(int doctorId) {
         String query = String.format("SELECT I.%s, I.%s, I.%s, I.%s, I.%s, I.%s FROM %s AS I JOIN %s AS C ON I.%s = C.%s" +
-                        " WHERE I.%s = ? AND I.%s = ? AND C.%s > ?", InvitationTable.COLUMN_ID, InvitationTable.COLUMN_ADMIN_ID,
+                        " WHERE I.%s = ? AND I.%s = ? AND C.%s > ? AND C.%s = ?", InvitationTable.COLUMN_ID, InvitationTable.COLUMN_ADMIN_ID,
                 InvitationTable.COLUMN_DOCTOR_ID, InvitationTable.COLUMN_CONFERENCE_ID, InvitationTable.COLUMN_STATE,
                 InvitationTable.COLUMN_UPDATED_AT, InvitationTable.TABLE_NAME, ConferenceTable.TABLE_NAME,
                 InvitationTable.COLUMN_CONFERENCE_ID, ConferenceTable.COLUMN_ID, InvitationTable.COLUMN_DOCTOR_ID,
-                InvitationTable.COLUMN_STATE, ConferenceTable.COLUMN_DATE);
+                InvitationTable.COLUMN_STATE, ConferenceTable.COLUMN_DATE, ConferenceTable.COLUMN_CANCELLED);
 
         Cursor cursor = dbHelper.getReadableDatabase().rawQuery(query, new String[]{String.valueOf(doctorId),
-                String.valueOf(Invitation.STATE_PENDING), String.valueOf(getTodayTimeMillis())});
+                String.valueOf(Invitation.STATE_PENDING), String.valueOf(getTodayTimeMillis()), "0"});
         List<Invitation> result = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext())
             result.add(InvitationMapper.getInvitationFromCursor(cursor));

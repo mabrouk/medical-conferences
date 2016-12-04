@@ -1,8 +1,7 @@
-package com.mabrouk.medicalconferences.persistance.preferences;
+package com.mabrouk.medicalconferences.persistence.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 /**
  * Created by User on 12/2/2016.

@@ -19,8 +19,8 @@ import com.mabrouk.medicalconferences.fragments.TopicsFragment;
 import com.mabrouk.medicalconferences.model.Conference;
 import com.mabrouk.medicalconferences.model.Invitation;
 import com.mabrouk.medicalconferences.model.Topic;
-import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
-import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
+import com.mabrouk.medicalconferences.persistence.preferences.UserPreferences;
+import com.mabrouk.medicalconferences.persistence.sqlite.DBWrapper;
 
 import java.util.Date;
 

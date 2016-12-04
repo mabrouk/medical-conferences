@@ -2,7 +2,7 @@ package com.mabrouk.medicalconferences;
 
 import android.app.Application;
 
-import com.mabrouk.medicalconferences.persistance.sqlite.DBWrapper;
+import com.mabrouk.medicalconferences.persistence.sqlite.DBWrapper;
 
 /**
  * Created by User on 12/2/2016.

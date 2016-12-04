@@ -24,6 +24,16 @@ import java.util.List;
  */
 
 public class ConferencesAdapter extends RecyclerView.Adapter<ConferencesAdapter.ConferenceViewHolder> {
+    static int conferenceIndexBasedOnDate(Conference conference, List<Conference> conferences) {
+        int size = conferences.size();
+        for(int i = 0; i < size; i++) {
+            if(conferences.get(i).getDateTimestamp() <= conference.getDateTimestamp()) {
+                return i;
+            }
+        }
+        return size;
+    }
+
     List<Conference> conferences;
     Presenter presenter;
     public ConferencesAdapter(Activity activity, List<Conference> conferences) {
@@ -35,26 +45,15 @@ public class ConferencesAdapter extends RecyclerView.Adapter<ConferencesAdapter.
     }
 
     public void addConference(Conference conference) {
-        int position = appropriateIndex(conference);
+        int position = conferenceIndexBasedOnDate(conference, conferences);
         conferences.add(position, conference);
         notifyItemRangeInserted(position, 1);
     }
 
-    int appropriateIndex(Conference conference) {
-        int size = conferences.size();
-        for(int i = 0; i < size; i++) {
-            if(conferences.get(i).getDateTimestamp() < conference.getDateTimestamp()) {
-                return i;
-            }
-        }
-        return size;
-    }
-
-    //TODO to be tested
     public void updateConference(Conference conference) {
         int oldPosition = indexOfConference(conference);
 
-        int newPosition = appropriateIndex(conference);
+        int newPosition = conferenceIndexBasedOnDate(conference, conferences);
 
         if(newPosition == oldPosition) {
             conferences.set(oldPosition, conference);
@@ -148,7 +147,7 @@ public class ConferencesAdapter extends RecyclerView.Adapter<ConferencesAdapter.
             holder.headline.setText(conference.getName());
             Date date = new Date(conference.getDateTimestamp());
             holder.subhead1.setText(String.format("Date: %s, at: %s", DateUtils.getDate(date), DateUtils.getTime(date)));
-            holder.action1Button.setOnClickListener(v -> activity.deleteConference(conference, position));
+            holder.action1Button.setOnClickListener(v -> activity.cancelConference(conference, position));
             holder.action2Button.setOnClickListener(v -> activity.editConference(conference));
             holder.itemView.setOnClickListener(v -> ConferenceDetailsActivity.startInstance(activity, conference));
         }

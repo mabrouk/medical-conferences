@@ -9,8 +9,7 @@ import android.widget.TextView;
 import com.mabrouk.medicalconferences.MedicalConferencesApplication;
 import com.mabrouk.medicalconferences.R;
 import com.mabrouk.medicalconferences.model.Topic;
-import com.mabrouk.medicalconferences.model.User;
-import com.mabrouk.medicalconferences.persistance.preferences.UserPreferences;
+import com.mabrouk.medicalconferences.persistence.preferences.UserPreferences;
 
 import java.util.List;
 
