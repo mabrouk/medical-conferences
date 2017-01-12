@@ -28,7 +28,7 @@ public class ConferencesAdapter extends RecyclerView.Adapter<ConferencesAdapter.
         int size = conferences.size();
         for(int i = 0; i < size; i++) {
             if(conferences.get(i).getDateTimestamp() <= conference.getDateTimestamp()) {
-                return i;
+                return i-1;
             }
         }
         return size;
